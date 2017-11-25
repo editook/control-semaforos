@@ -7,6 +7,7 @@ package graficos;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Random;
@@ -27,6 +28,7 @@ public class vehiculo extends Thread {
     ArrayList<semaforo> semaforos;
     int direccion = 0;// 1 derecha rizontal 2 abajo vertical 3 izquierda orizontal 4 arriba vertical
     Color rojo = new Color(255, 32, 32);
+
     public vehiculo(Point puntoMov, Point p, int velocity) {
         this.puntoMov = puntoMov;
         ubicacion = p;
@@ -78,85 +80,28 @@ public class vehiculo extends Thread {
         semaforos = panel.getListaSemaforos();
         boolean resVehiculo = false;
         boolean resSemaforo = false;
-        
-        if (direccion == 1) {
-            for (int i = 0; i < vehiculos.size(); i++) {
-                if (puedeTransitar(vehiculos.get(i))) {
-                    resVehiculo = true;
-                    break;
-                }
-            }
-            for (int i = 0; i < semaforos.size(); i++) {
-                if (Semaforo(semaforos.get(i))) {
-                    resSemaforo = true;
-                    break;
-                }
-            }
 
-        }
-        if (direccion == 2) {
-            for (int i = 0; i < vehiculos.size(); i++) {
-                if (puedeTransitar(vehiculos.get(i))) {
+        for (int i = 0; i < vehiculos.size(); i++) {
+            if (vehiculos.get(i).direccion == direccion) {
+                if (colision(vehiculos.get(i))) {
                     resVehiculo = true;
                     break;
                 }
             }
-            for (int i = 0; i < semaforos.size(); i++) {
-                if (Semaforo(semaforos.get(i))) {
-                    resSemaforo = true;
-                    break;
-                }
-            }
         }
-        if (direccion == 3) {
-            for (int i = 0; i < vehiculos.size(); i++) {
-                if (puedeTransitar(vehiculos.get(i))) {
-                    resVehiculo = true;
-                    break;
-                }
+        
+        for (int i = 0; i < semaforos.size(); i++) {
+            if (semaforos.get(i).direccion==direccion) {
+                if(ControlSemaforo(semaforos.get(i))){
+                resSemaforo = true;
+                break;
             }
-            for (int i = 0; i < semaforos.size(); i++) {
-                if (Semaforo(semaforos.get(i))) {
-                    resSemaforo = true;
-                    break;
-                }
-            }
+        
         }
-        if (direccion == 4) {
-            for (int i = 0; i < vehiculos.size(); i++) {
-                if (puedeTransitar(vehiculos.get(i))) {
-                    resVehiculo = true;
-                    break;
-                }
-            }
-            for (int i = 0; i < semaforos.size(); i++) {
-                if (Semaforo(semaforos.get(i))) {
-                    resSemaforo = true;
-                    break;
-                }
-            }
         }
         if (resVehiculo == false && resSemaforo == false) {
             ubicacion.x = ubicacion.x + (puntoMov.x);
             ubicacion.y = ubicacion.y + (puntoMov.y);
-
-        }
-    }
-
-    public void paint(Graphics g) {
-        g.setColor(color.brighter());
-        if (direccion == 1 || direccion == 3) {
-            g.fillRect(ubicacion.x, ubicacion.y, 40, 22);
-            g.setColor(Color.black);
-            g.fillRect(ubicacion.x + 5, ubicacion.y + 2, 5, 18);
-            g.fillRect(ubicacion.x + 14, ubicacion.y + 2, 10, 18);
-            g.fillRect(ubicacion.x + 27, ubicacion.y + 2, 5, 18);
-        } else {
-            g.fillRect(ubicacion.x, ubicacion.y, 22, 40);
-            g.setColor(Color.black);
-            g.fillRect(ubicacion.x + 2, ubicacion.y + 5, 18, 5);
-            g.fillRect(ubicacion.x + 2, ubicacion.y + 14, 18, 10);
-            g.fillRect(ubicacion.x + 2, ubicacion.y + 27, 18, 5);
         }
     }
 
@@ -164,6 +109,52 @@ public class vehiculo extends Thread {
         return caminoRecorrido;
     }
 
+    public void paint(Graphics g) {
+        Graphics2D gg=(Graphics2D)g;
+        gg.setColor(color.brighter());
+        if (direccion == 1 || direccion == 3) {
+            gg.fillRect(ubicacion.x, ubicacion.y, 40, 22);
+            gg.setColor(Color.black);
+            gg.fillRect(ubicacion.x + 5, ubicacion.y + 2, 5, 18);
+            gg.fillRect(ubicacion.x + 14, ubicacion.y + 2, 10, 18);
+            gg.fillRect(ubicacion.x + 27, ubicacion.y + 2, 5, 18);
+        } else {
+            gg.fillRect(ubicacion.x, ubicacion.y, 22, 40);
+            gg.setColor(Color.black);
+            gg.fillRect(ubicacion.x + 2, ubicacion.y + 5, 18, 5);
+            gg.fillRect(ubicacion.x + 2, ubicacion.y + 14, 18, 10);
+            gg.fillRect(ubicacion.x + 2, ubicacion.y + 27, 18, 5);
+        }
+        gg.setColor(Color.black);
+        gg.drawString(ubicacion.x+","+ubicacion.y,ubicacion.x,ubicacion.y);
+    }
+    private boolean colision(vehiculo c) {
+        boolean res = false;
+        switch (c.direccion) {
+            case 1:
+                if (ubicacion.x + 42 == c.ubicacion.x &&ubicacion.y == c.ubicacion.y) {
+                    res = true;
+                }
+                break;
+            case 2:
+                if (ubicacion.y + 42 == c.ubicacion.y && ubicacion.x == c.ubicacion.x) {
+                    res = true;
+                }
+                break;
+            case 3:
+                if (ubicacion.x == c.ubicacion.x+42 && ubicacion.y == c.ubicacion.y) {
+                    res = true;
+                }
+                break;
+            case 4:
+                if (ubicacion.y == c.ubicacion.y+42 && ubicacion.x == c.ubicacion.x) {
+                    res = true;
+                }
+                break;
+        }
+
+        return res;
+    }
     private boolean Limite() {
         boolean res = true;
         switch (direccion) {
@@ -191,73 +182,26 @@ public class vehiculo extends Thread {
         return res;
     }
 
-    private boolean puedeTransitar(vehiculo c) {
-        boolean res = false;//no colision
-        vehiculo coche = c;
-        //vehiculos.get(i).ubicacion.x == this.ubicacion.x + 42 && vehiculos.get(i).ubicacion.y == this.ubicacion.y
-        switch (direccion) {
-            case 1:
-                switch (coche.direccion) {
-                    case 1:
-                        if (this.ubicacion.x + 42 == coche.ubicacion.x && this.ubicacion.y == coche.ubicacion.y) {
-                            res = true;
-                        }
-                }
-                break;
-            case 2:
-                switch (coche.direccion) {
-                    case 2:
-                        if (this.ubicacion.y == coche.ubicacion.y - 42 && this.ubicacion.x == coche.ubicacion.x) {
-                            res = true;
-                        }
-                }
-                break;
-            case 3:
-                switch (coche.direccion) {
-                    case 3:
-                        if (this.ubicacion.x == coche.ubicacion.x + 42 && this.ubicacion.y == coche.ubicacion.y) {
-                            res = true;
-                        }
-                }
-                break;
-            case 4:
-                switch (coche.direccion) {
-                    case 4:
-                        if (this.ubicacion.y == coche.ubicacion.y - 42 && this.ubicacion.x == coche.ubicacion.x) {
-                            res = true;
-                        }
-                }
-                break;
-        }
-
-        return res;
-    }
-    //semaforos.get(i).punto.x == this.ubicacion.x + 42 && semaforos.get(i).rojo.equals(rojo)
-    //                    && semaforos.get(i).config == this.direccion
-    private boolean Semaforo(semaforo semaforo) {
+    private boolean ControlSemaforo(semaforo s) {
         boolean res=false;
-        switch(this.direccion){
+        switch(direccion){
             case 1:
-                if(this.ubicacion.x+42==semaforo.punto.x 
-                        && semaforo.rojo.equals(rojo)&& semaforo.config == this.direccion){
+                if(ubicacion.x+42==s.punto.x && s.rojo.equals(rojo) && pertenece(ubicacion.y,s.punto.y)){
                     res=true;
                 }
                 break;
             case 2:
-                if(this.ubicacion.y+42==semaforo.punto.y  
-                        && semaforo.rojo.equals(rojo) && semaforo.config == this.direccion){
+                if(ubicacion.y+42==s.punto.y && s.rojo.equals(rojo) && pertenece(ubicacion.x,s.punto.x)){
                     res=true;
                 }
                 break;
             case 3:
-                if(this.ubicacion.x==semaforo.punto.x+2 
-                        && semaforo.rojo.equals(rojo)&& semaforo.config == this.direccion){
+                if(ubicacion.x==s.punto.x+14 && s.rojo.equals(rojo) && pertenece(ubicacion.y,s.punto.y)){
                     res=true;
                 }
                 break;
             case 4:
-                if(this.ubicacion.y==semaforo.punto.y+2
-                        && semaforo.rojo.equals(rojo)&& semaforo.config == this.direccion){
+                if(ubicacion.y==s.punto.y+14 && s.rojo.equals(rojo) && pertenece(ubicacion.x,s.punto.x)){
                     res=true;
                 }
                 break;
@@ -265,11 +209,12 @@ public class vehiculo extends Thread {
         return res;
     }
 
-    private boolean pertenescaRango(int p, int este) {
-        boolean res=false;
-        if(este >p+25 && este<p-25){
-            res=true;
-        }
-        return res;
+    private boolean pertenece(int a, int b) {
+    boolean res=false;
+    if(a>b-20 && a<b+80){
+        res=true;
     }
+    return res;
+    }
+
 }

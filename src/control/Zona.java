@@ -68,7 +68,7 @@ public class Zona {
         b.relacion(c,"mayor rocha");
         c.relacion(d,"mayor rocha");
         
-        e.relacion(f,"ecuador");
+        //e.relacion(f,"ecuador");
         f.relacion(g,"ecuador");
         g.relacion(h,"ecuador");
         

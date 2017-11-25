@@ -6,6 +6,7 @@
 package graficos;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -21,8 +22,9 @@ public class Esquina {
         this.punto=punto;
     }
     public void paint(Graphics g){
-        g.setColor(Color.BLACK);
-        g.drawRect(punto.x,punto.y,80,80);
+        Graphics2D gg=(Graphics2D)g;
+        gg.setColor(Color.BLACK);
+        gg.drawRect(punto.x,punto.y,80,80);
         
     }
 }

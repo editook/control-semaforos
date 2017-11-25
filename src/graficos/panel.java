@@ -16,6 +16,7 @@ import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 /**
@@ -33,7 +34,6 @@ public class panel extends JPanel {
     grafo g;
     ZonaVehicular zv;
     Random random = new Random();
-
     public panel(JFrame frame) {
         this.frame = frame;
         pane = this;
@@ -43,10 +43,13 @@ public class panel extends JPanel {
         ListaCalles = new ArrayList<>();
         ListaVehiculos = new ArrayList<>();
         ListaSemaforo = new ArrayList<>();
+        
         cargarRegion();
         cargarSemaforos();
         zv = new ZonaVehicular();
+        
         zv.start();
+        
     }
 
     @Override
@@ -118,36 +121,37 @@ public class panel extends JPanel {
         ListaSemaforo.add(new semaforo(new Point(460, 50), 2));
         //---------------------------------------------------
         ListaSemaforo.add(new semaforo(new Point(250, 60), 1));
-        ListaSemaforo.add(new semaforo(new Point(260, 110), 2));
+        ListaSemaforo.add(new semaforo(new Point(260, 110), 4));
+        ListaSemaforo.add(new semaforo(new Point(650, 60), 1));
+        ListaSemaforo.add(new semaforo(new Point(660, 110), 4));
+        //ListaSemaforo.add(new semaforo(new Point(312, 258), 3));//v
+        //ListaSemaforo.add(new semaforo(new Point(258, 312), 4));//h
 
-        ListaSemaforo.add(new semaforo(new Point(312, 258), 1));//v
-        ListaSemaforo.add(new semaforo(new Point(258, 312), 2));//h
-
-        ListaSemaforo.add(new semaforo(new Point(512, 258), 1));//v
-        ListaSemaforo.add(new semaforo(new Point(458, 312), 2));//h
+        ListaSemaforo.add(new semaforo(new Point(512, 258), 3));//v
+        ListaSemaforo.add(new semaforo(new Point(458, 258), 2));//h
 
         ListaSemaforo.add(new semaforo(new Point(250, 460), 1));
-        ListaSemaforo.add(new semaforo(new Point(260, 510), 2));
+        ListaSemaforo.add(new semaforo(new Point(260, 510), 4));
 
         ListaSemaforo.add(new semaforo(new Point(250, 658), 1));//v
-        ListaSemaforo.add(new semaforo(new Point(258, 705), 2));//h
+        ListaSemaforo.add(new semaforo(new Point(258, 705), 4));//h
 
-        ListaSemaforo.add(new semaforo(new Point(110, 260), 1));
-        ListaSemaforo.add(new semaforo(new Point(60, 250), 2));
+        //ListaSemaforo.add(new semaforo(new Point(110, 260), 3));
+        //ListaSemaforo.add(new semaforo(new Point(60, 250), 2));
 
-        ListaSemaforo.add(new semaforo(new Point(712, 260), 1));
-        ListaSemaforo.add(new semaforo(new Point(658, 312), 2));
+        ListaSemaforo.add(new semaforo(new Point(712, 260), 3));
+        ListaSemaforo.add(new semaforo(new Point(658, 312), 4));
 
         ListaSemaforo.add(new semaforo(new Point(656, 460), 1));
-        ListaSemaforo.add(new semaforo(new Point(658, 512), 2));
+        ListaSemaforo.add(new semaforo(new Point(658, 512), 4));
 
         ListaSemaforo.add(new semaforo(new Point(652, 658), 1));//v
-        ListaSemaforo.add(new semaforo(new Point(658, 705), 2));//h
+        ListaSemaforo.add(new semaforo(new Point(658, 705), 4));//h
     }
 
     public class ZonaVehicular extends Thread {
 
-        public int FlujoZona = 2000;
+        public int FlujoZona = 1000;
         int separadorTiempo;
 
         public ZonaVehicular() {
@@ -177,7 +181,7 @@ public class panel extends JPanel {
 
         private void agregarVehiculos() {
 
-            if (ListaVehiculos.size() < 20) {
+            if (ListaVehiculos.size() < 30) {
                 ListaVehiculos.add(getVehiculo());
             }
 

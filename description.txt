@@ -1,0 +1,12 @@
+# control-semaforos
+teoria de grafos
+descripcion:
+[*]la aplicacion debe tener una interfaz grafica, donde debe haber cuadras y calles, las intersecciones de las calles estan controladas
+por semaforos, cada calle tiene su sentido y carriles: el mapa debe tener por lo menos 4x4 cuadras y tiene que simular la vida real,
+es decir de un mapa de bolivia-cochabamba.
+
+[*]debe tener en cuenta el flujo de movilidades que hay en una cuadra, no todas las calles tienes el mismo flujo de transito.
+[*]tambien se tiene que tomar en cuenta la hora pico de ejm 10:00 am a 13:00 pm el flujo es bastante.
+[*]como algo adicional el sistema de semaforos deberia estar atento a los atrasos ya sea por trabajos,bloqueos ,etc.
+[*] debe tener capacidad de movilidades de flujo (regular y maximo), regular el semaforo no cambio sus estados,en maximo, debe controlar
+que no haya atascos o embotellamientos.

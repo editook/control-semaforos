@@ -20,7 +20,6 @@ public class grafo extends ArrayList<vertice> {
 
     public int tamano() {
         return this.size();
-
     }
     public vertice getVertice(String nombre){
         vertice n=null;
@@ -30,6 +29,9 @@ public class grafo extends ArrayList<vertice> {
             }
         }
         return n;
+    }
+    public vertice getAdyacente(int pos){
+        return this.get(pos);
     }
     public int posicion(vertice nodo) {
         return this.indexOf(nodo);

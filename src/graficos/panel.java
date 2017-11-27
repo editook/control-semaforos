@@ -49,16 +49,16 @@ public class panel extends JPanel {
         zv = new ZonaVehicular();
         
         zv.start();
-        
+        //mostrarGrafo();
     }
 
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         //Graphics2D gg=(Graphics2D)g;
-        /*        for (int i = 0; i < listaEsquinas.size(); i++) {
+        for (int i = 0; i < listaEsquinas.size(); i++) {
         listaEsquinas.get(i).paint(g);
-        }*/
+        }
         for (int i = 0; i < ListaCalles.size(); i++) {
             ListaCalles.get(i).paint(g);
         }
@@ -82,11 +82,12 @@ public class panel extends JPanel {
             for (int j = 0; j < relaciones.size(); j++) {
                 graficarCalles(g.get(i).getPunto(), relaciones.get(j).getPunto(), nombreCalles.get(j));
             }
+            
         }
     }
 
     private void graficaEsquina(vertice v) {
-        listaEsquinas.add(new Esquina(v.getPunto()));
+        listaEsquinas.add(new Esquina(v.getPunto(),v.nombre));
     }
 
     private void graficarCalles(Point puntoI, Point puntoF, String nombreC) {
@@ -149,6 +150,20 @@ public class panel extends JPanel {
         ListaSemaforo.add(new semaforo(new Point(658, 705), 4));//h
     }
 
+    private void mostrarGrafo() {
+        for(int i=0;i<g.size();i++){
+        vertice ve=g.getAdyacente(i);
+        ArrayList<String>rutas=ve.getRutas();
+        ArrayList<vertice>relacion=ve.Adyacente();
+         System.err.print(ve.nombre+" : ");
+            for (int j = 0; j <rutas.size(); j++) {
+                System.err.print(relacion.get(j).nombre+" , ");
+            }
+        System.err.println("...........................");
+        }
+        
+    }
+
     public class ZonaVehicular extends Thread {
 
         public int FlujoZona = 1000;
@@ -174,6 +189,7 @@ public class panel extends JPanel {
         private void eliminaVehiculosRecorrido() {
             for (int i = 0; i < ListaVehiculos.size(); i++) {
                 if (ListaVehiculos.get(i).CaminoRecorrido()) {
+                    ListaVehiculos.get(i).stop();
                     ListaVehiculos.remove(i);
                 }
             }
@@ -181,7 +197,7 @@ public class panel extends JPanel {
 
         private void agregarVehiculos() {
 
-            if (ListaVehiculos.size() < 30) {
+            if (ListaVehiculos.size() < 1) {
                 ListaVehiculos.add(getVehiculo());
             }
 

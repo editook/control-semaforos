@@ -57,7 +57,7 @@ public class semaforo extends Thread {
             rojo = rojoInactivo;
             amarillo = amarilloActivo;
             verde = verdeInactivo;
-            Thread.sleep(700);
+            Thread.sleep(1000);
             rojo = rojoActivo;
             amarillo = amarilloInactivo;
             verde = verdeInactivo;
@@ -81,7 +81,7 @@ public class semaforo extends Thread {
             rojo = rojoInactivo;
             amarillo = amarilloActivo;
             verde = verdeInactivo;
-            Thread.sleep(700);
+            Thread.sleep(1000);
 
         } catch (InterruptedException ex) {
             

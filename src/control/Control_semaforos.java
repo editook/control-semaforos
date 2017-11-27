@@ -4,9 +4,7 @@
  * and open the template in the editor.
  */
 package control;
-
 import interfaz.jframe;
-
 /**%
  *
  * @author ASUS

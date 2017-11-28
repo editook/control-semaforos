@@ -197,7 +197,7 @@ public class panel extends JPanel {
 
         private void agregarVehiculos() {
 
-            if (ListaVehiculos.size() < 1) {
+            if (ListaVehiculos.size() < 15) {
                 ListaVehiculos.add(getVehiculo());
             }
 

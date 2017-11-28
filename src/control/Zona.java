@@ -6,6 +6,7 @@
 package control;
 
 import java.awt.Point;
+import java.util.HashMap;
 
 /**
  *
@@ -92,5 +93,10 @@ public class Zona {
         gr.add(dd);gr.add(ee);gr.add(ff);gr.add(gg);gr.add(hh);
         gr.add(ii);gr.add(jj);gr.add(kk);gr.add(ll);
         return gr;
+    }
+    public static Point getPuntoDireccional(Point p){
+        HashMap<String,Point>map=new HashMap<>();
+        //map.put(key, p);
+        return map.get(p);
     }
 }

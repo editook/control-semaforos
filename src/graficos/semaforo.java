@@ -108,7 +108,7 @@ public class semaforo extends Thread {
             }
 
         }
-        gg.setColor(Color.black);
-        gg.drawString(direccion+": "+punto.x+","+punto.y,punto.x,punto.y);
+        //gg.setColor(Color.black);
+        //gg.drawString(direccion+": "+punto.x+","+punto.y,punto.x,punto.y);
     }
 }

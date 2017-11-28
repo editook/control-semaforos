@@ -5,7 +5,7 @@
  */
 package control;
 import interfaz.jframe;
-/**%
+/**
  *
  * @author ASUS
  */

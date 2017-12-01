@@ -9,12 +9,26 @@ import control.Zona;
 import control.grafo;
 import control.vertice;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.imageio.ImageIO;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -31,25 +45,80 @@ public class panel extends JPanel {
     ArrayList<Calle> ListaCalles;//arista calama ejm
     static ArrayList<vehiculo> ListaVehiculos;
     static ArrayList<semaforo> ListaSemaforo;
+    static ArrayList<JLabel> bloqueos;
     grafo g;
     ZonaVehicular zv;
     Random random = new Random();
+    JPanel componentes;
+    JLabel tiempo;
+    JButton bloquear;
+    JLabel titulo;
+    Reloj r;
+    String nombreCalleX;
+    String verticalOrizontalX;
+    boolean habilitarClick = false;
+    JComboBox<String> selectorVO, selectorCalle;
+    JLabel bloqueoVertical;
+    int x = 0;
+    int y = 100;
+
     public panel(JFrame frame) {
         this.frame = frame;
         pane = this;
-        pane.setBounds(200, -10, 800, 750);
+
+        componentes = new JPanel();
+        componentes.setLocale(null);
+        componentes.setBounds(1000, 0, 400, 750);
+        componentes.setLayout(null);
+        componentes.setBackground(Color.white);
+        agregarComponentes();
+        frame.getContentPane().add(componentes);
+        pane.setLocale(null);
+        pane.setLayout(null);
+        pane.setBounds(200, -10, 800, 800);
         pane.setBackground(new Color(128, 128, 128));
+        pane.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                if (habilitarClick) {
+                    habilitarClick = false;
+                    pane.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+                }
+            }
+        });
+        pane.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            @Override
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                if (habilitarClick) {
+                    bloqueoVertical.setLocation(evt.getPoint());
+                } else {
+                    //bloqueoVertical.setLocation(-1,-100);
+                }
+
+            }
+        });
         listaEsquinas = new ArrayList<>();
         ListaCalles = new ArrayList<>();
         ListaVehiculos = new ArrayList<>();
         ListaSemaforo = new ArrayList<>();
-        
+        bloqueos = new ArrayList<>();
         cargarRegion();
         cargarSemaforos();
+        r = new Reloj();
         zv = new ZonaVehicular();
-        
+        r.start();
         zv.start();
+
         //mostrarGrafo();
+    }
+
+    public void dibujar(JLabel ima, String tipo) {
+        URL url;
+        url = getClass().getResource("/graficos/images/" + tipo + ".png");
+        ImageIcon imagen = new ImageIcon(url);
+        Icon icono = new ImageIcon(imagen.getImage().getScaledInstance(ima.getWidth(), ima.getHeight(), Image.SCALE_DEFAULT));
+        ima.setIcon(icono);
+        ima.repaint();
     }
 
     @Override
@@ -57,7 +126,7 @@ public class panel extends JPanel {
         super.paintComponent(g);
         //Graphics2D gg=(Graphics2D)g;
         for (int i = 0; i < listaEsquinas.size(); i++) {
-        listaEsquinas.get(i).paint(g);
+            listaEsquinas.get(i).paint(g);
         }
         for (int i = 0; i < ListaCalles.size(); i++) {
             ListaCalles.get(i).paint(g);
@@ -67,6 +136,9 @@ public class panel extends JPanel {
         }
         for (int i = 0; i < ListaSemaforo.size(); i++) {
             ListaSemaforo.get(i).paint(g);
+        }
+        for (int i = 0; i < bloqueos.size(); i++) {
+            bloqueos.get(i).repaint();
         }
         this.repaint();
     }
@@ -82,12 +154,12 @@ public class panel extends JPanel {
             for (int j = 0; j < relaciones.size(); j++) {
                 graficarCalles(g.get(i).getPunto(), relaciones.get(j).getPunto(), nombreCalles.get(j));
             }
-            
+
         }
     }
 
     private void graficaEsquina(vertice v) {
-        listaEsquinas.add(new Esquina(v.getPunto(),v.nombre));
+        listaEsquinas.add(new Esquina(v.getPunto(), v.nombre));
     }
 
     private void graficarCalles(Point puntoI, Point puntoF, String nombreC) {
@@ -139,7 +211,6 @@ public class panel extends JPanel {
 
         //ListaSemaforo.add(new semaforo(new Point(110, 260), 3));
         //ListaSemaforo.add(new semaforo(new Point(60, 250), 2));
-
         ListaSemaforo.add(new semaforo(new Point(712, 260), 3));
         ListaSemaforo.add(new semaforo(new Point(658, 312), 4));
 
@@ -150,23 +221,58 @@ public class panel extends JPanel {
         ListaSemaforo.add(new semaforo(new Point(658, 705), 4));//h
     }
 
-    private void mostrarGrafo() {
-        for(int i=0;i<g.size();i++){
-        vertice ve=g.getAdyacente(i);
-        ArrayList<String>rutas=ve.getRutas();
-        ArrayList<vertice>relacion=ve.Adyacente();
-         System.err.print(ve.nombre+" : ");
-            for (int j = 0; j <rutas.size(); j++) {
-                System.err.print(relacion.get(j).nombre+" , ");
+    private void agregarComponentes() {
+        titulo = new JLabel("Control de Semaforos");
+        titulo.setFont(new java.awt.Font("Kristen ITC", 1, 24)); // NOI18N
+        titulo.setBounds(50, 20, 300, 50);
+        componentes.add(titulo);
+        bloquear = new JButton("Bloquear Via");
+        bloquear.setFont(new java.awt.Font("Kristen ITC", 1, 24));
+        bloquear.setBackground(Color.cyan);
+        bloquear.setBounds(30, 200, 300, 150);
+        bloquear.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String VO = selectorVO.getSelectedItem().toString();
+                String NombreCalle = selectorCalle.getSelectedItem().toString();
+                System.out.println(VO + " " + NombreCalle);
+                pane.setCursor(new java.awt.Cursor(java.awt.Cursor.CROSSHAIR_CURSOR));
+                habilitarClick = true;
+                bloqueoVertical = new JLabel();
+                bloqueoVertical.setBounds(x, y, 120, 93);
+                dibujar(bloqueoVertical, "trabajando");
+                bloqueos.add(bloqueoVertical);
+                pane.add(bloqueoVertical);
             }
-        System.err.println("...........................");
-        }
-        
+        });
+        componentes.add(bloquear);
+
+        tiempo = new JLabel();
+        tiempo.setFont(new java.awt.Font("Kristen ITC", 1, 26));
+        tiempo.setBackground(Color.white);
+        tiempo.setBounds(100, 50, 200, 200);
+        componentes.add(tiempo);
+
+        selectorVO = new JComboBox<>();
+        selectorVO.setBounds(30, 350, 150, 50);
+        selectorVO.setBackground(Color.green);
+        selectorVO.setFont(new java.awt.Font("Kristen ITC", 1, 20));
+        selectorVO.setModel(new javax.swing.DefaultComboBoxModel<>(new String[]{"heroinas", "colombia", "ecuador", "Ma batista",
+             "españa", "mexico", "san martin"}));
+        componentes.add(selectorVO);
+
+        selectorCalle = new JComboBox<>();
+        selectorCalle.setBounds(181, 350, 150, 50);
+        selectorCalle.setBackground(Color.orange);
+        selectorCalle.setFont(new Font("Kristen ITC", 1, 20));
+        selectorCalle.setModel(new DefaultComboBoxModel<>(new String[]{"heroinas", "colombia", "ecuador", "Ma batista",
+             "españa", "mexico", "san martin"}));
+        componentes.add(selectorCalle);
     }
 
     public class ZonaVehicular extends Thread {
 
-        public int FlujoZona = 1000;
+        public int FlujoZona = 1500;
         int separadorTiempo;
 
         public ZonaVehicular() {
@@ -196,11 +302,9 @@ public class panel extends JPanel {
         }
 
         private void agregarVehiculos() {
-
             if (ListaVehiculos.size() < 15) {
                 ListaVehiculos.add(getVehiculo());
             }
-
         }
 
         private vehiculo getVehiculo() {
@@ -210,11 +314,11 @@ public class panel extends JPanel {
             int direccion = random.nextInt(10);//1 ID-orizontal, 2ArAb-vertical,3 DI orzontal,4 AbAr vertical
             switch (direccion) {
                 case 1:
-                    puntoPosicionV = new Point(-20, getUno(465, 495));
+                    puntoPosicionV = new Point(-44, getUno(465, 495));
                     movimiento = new Point(1, 0);
                     break;//colombia-->
                 case 2:
-                    puntoPosicionV = new Point(getUno(462, 492), -20);
+                    puntoPosicionV = new Point(getUno(462, 492), -44);
                     movimiento = new Point(0, 1);
                     break;//25 de mayo
                 case 3:
@@ -226,7 +330,7 @@ public class panel extends JPanel {
                     movimiento = new Point(-1, 0);
                     break; //ecuador<--
                 case 5:
-                    puntoPosicionV = new Point(getUno(65, 95), -20);
+                    puntoPosicionV = new Point(getUno(65, 95), -44);
                     movimiento = new Point(0, 1);
                     break; //marianoV
                 case 6:
@@ -234,11 +338,11 @@ public class panel extends JPanel {
                     movimiento = new Point(0, -1);
                     break; //españa
                 case 7:
-                    puntoPosicionV = new Point(-20, getUno(65, 95));
+                    puntoPosicionV = new Point(-44, getUno(65, 95));
                     movimiento = new Point(1, 0);
                     break; //mayor rocha
                 default:
-                    puntoPosicionV = new Point(-20, getUno(665, 695));
+                    puntoPosicionV = new Point(-44, getUno(665, 695));
                     movimiento = new Point(1, 0);
                     break; //heroinas
             }
@@ -253,6 +357,65 @@ public class panel extends JPanel {
             } else {
                 return b;
             }
+        }
+    }
+
+    public class Reloj extends Thread {
+
+        int hora, min, segundo;
+        String h, m, s;
+
+        public Reloj() {
+            hora = 0;
+            min = 0;
+            segundo = 0;
+        }
+
+        @Override
+        public void run() {
+            while (true) {
+                cambiar();
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException ex) {
+
+                }
+                tiempo.setText(h + ":" + m + ":" + s);
+            }
+        }
+
+        private void cambiar() {
+            if (hora < 24) {
+                if (min < 60) {
+                    if (segundo < 60) {
+                        segundo++;
+                    } else {
+                        segundo = 0;
+                        min++;
+                    }
+                } else {
+                    min = 0;
+                    hora++;
+                    segundo = 0;
+                }
+            } else {
+                hora = 0;
+                min = 0;
+                segundo = 0;
+            }
+            h = "" + hora;
+            m = "" + min;
+            s = "" + segundo;
+            if (hora <= 9) {
+                h = "0" + hora;
+            }
+            if (min <= 9) {
+                m = "0" + min;
+            }
+            if (segundo <= 9) {
+                s = "0" + segundo;
+            }
+
         }
     }
 }

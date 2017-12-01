@@ -36,6 +36,9 @@ public class vertice {
     public ArrayList<String> getRutas(){
     return rutas;
     }
+    public String getNombreRuta(int pos){
+    return rutas.get(pos);
+    }
     public ArrayList<vertice> Adyacente(){
         return relacion;
     }

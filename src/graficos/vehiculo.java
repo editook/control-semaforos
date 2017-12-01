@@ -12,6 +12,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Random;
 import javax.swing.JOptionPane;
@@ -34,14 +35,16 @@ public class vehiculo extends Thread {
     Color rojo = new Color(255, 32, 32);
     Color amarillo = new Color(255, 255, 0);
     grafo g;
-
+    public Rectangle objeto1,objeto2;
     public vehiculo(Point puntoMov, Point p, int velocity) {
         this.puntoMov = puntoMov;
         ubicacion = p;
+        objeto1=new Rectangle();
+        objeto2=new Rectangle();
         color = new Color(r.nextInt(255), r.nextInt(255), r.nextInt(255));
         switch (velocity) {
             case 1:
-                velocidad = 13;
+                velocidad = 18;
                 break;//alta
             case 2:
                 velocidad = 20;
@@ -142,50 +145,66 @@ public class vehiculo extends Thread {
         //gg.setColor(Color.black);
         //gg.drawString(ubicacion.x+","+ubicacion.y,ubicacion.x,ubicacion.y);
     }
-
     private boolean colision(vehiculo c) {
         boolean res = false;
+        
         switch (c.direccion) {
             case 1:
-                if (ubicacion.x + 44 == c.ubicacion.x && ubicacion.y == c.ubicacion.y) {
+                if (colisiono(ubicacion.x + 46,c.ubicacion.x,c.ubicacion.y ,ubicacion.y)) {
+                    //ubicacion.x + 44 == c.ubicacion.x && ubicacion.y == c.ubicacion.y
                     res = true;
                 }
                 break;
             case 2:
-                if (ubicacion.y + 44 == c.ubicacion.y && ubicacion.x == c.ubicacion.x) {
+                if (colisiono(ubicacion.y+46,c.ubicacion.y,c.ubicacion.x,ubicacion.x)) {
+                    //ubicacion.y + 44 == c.ubicacion.y && ubicacion.x == c.ubicacion.x
                     res = true;
                 }
                 break;
             case 3:
-                if (ubicacion.x == c.ubicacion.x + 44 && ubicacion.y == c.ubicacion.y) {
+                if (colisiono(ubicacion.x, c.ubicacion.x+46,c.ubicacion.y,ubicacion.y)) {
+                    //ubicacion.x == c.ubicacion.x + 44 && ubicacion.y == c.ubicacion.y
                     res = true;
                 }
                 break;
             case 4:
-                if (ubicacion.y == c.ubicacion.y + 44 && ubicacion.x == c.ubicacion.x) {
+                if (colisiono(ubicacion.y,c.ubicacion.y+46,ubicacion.x,c.ubicacion.x)) {
+                    //ubicacion.y == c.ubicacion.y + 44 && ubicacion.x == c.ubicacion.x
                     res = true;
                 }
                 break;
         }
-
         return res;
     }
 
+    private boolean colisiono(int a, int a2, int b , int b2) {
+        boolean res=false;
+        if(a==a2 && b==b2){{
+            res=true;
+            
+        }}
+        /* if((a>=a2-2 && a<=a2+2 ) ||(a2>=a-2 && a2<=a+2 )){
+        if((b>=b2-2 && b<=b2-2)|| (b2>=b-2 && b<=b2+2)){
+        res=true;
+        }
+        }*/
+        return res;
+    }
     private boolean Limite() {
         boolean res = true;
         switch (direccion) {
             case 1:
-                if (ubicacion.x > 900) {
+                if (ubicacion.x > 800) {
                     res = false;
                 }
                 break;//DI
             case 2:
-                if (ubicacion.y > 800) {
+                if (ubicacion.y > 860) {
                     res = false;
                 }
                 break;//ArAb
             case 3:
-                if (ubicacion.x < -100) {
+                if (ubicacion.x < -44) {
                     res = false;
                 }
                 break;//ID
@@ -222,6 +241,7 @@ public class vehiculo extends Thread {
                 }
                 break;
         }
+        
         return res;
     }
 
@@ -235,7 +255,6 @@ public class vehiculo extends Thread {
 
     private void cambiarDireccion() {
         vertice ve;
-
         for (int i = 0; i < g.size(); i++) {
             ve = g.getAdyacente(i);//quitar a los demas de las esquinas 
             if (esquina(ve)) {
@@ -280,14 +299,18 @@ public class vehiculo extends Thread {
         ArrayList<vertice> relacion = v.Adyacente();
         int randon = r.nextInt(relacion.size());
         Point puntoDireccion = relacion.get(randon).getPunto();
+        String calle =v.getRutas().get(randon);
         if(esquina(relacion.get(randon))){
             if(ubicacion.x==puntoDireccion.x+20 && (ubicacion.y<puntoDireccion.y)){
+            ubicacion=Zona.getPuntoDirecciona(ubicacion,calle);
             direccion=2;
             puntoMov.x=0;
             puntoMov.y=1;
+            
         }
         else{
             if(ubicacion.x==puntoDireccion.x+20 && (ubicacion.y>puntoDireccion.y)){
+                ubicacion=Zona.getPuntoDirecciona(ubicacion,calle);
              direccion=4;
             puntoMov.x=0;
             puntoMov.y=-1;
@@ -296,13 +319,14 @@ public class vehiculo extends Thread {
             }
         }
         if(ubicacion.y==puntoDireccion.y+20 && (ubicacion.x<puntoDireccion.x)){
+            ubicacion=Zona.getPuntoDirecciona(ubicacion,calle);
             direccion=1;
             puntoMov.x=1;
             puntoMov.y=0;
         }
         else{
             if(ubicacion.y==puntoDireccion.y+20 && (ubicacion.x>puntoDireccion.x)){
-            
+            ubicacion=Zona.getPuntoDirecciona(ubicacion,calle);
             direccion=3;
             puntoMov.x=-1;
             puntoMov.y=0;
@@ -311,5 +335,6 @@ public class vehiculo extends Thread {
         }
         
     }
+
 
 }

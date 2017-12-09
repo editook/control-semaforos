@@ -45,8 +45,8 @@ public class panel extends JPanel {
     ArrayList<Calle> ListaCalles;//arista calama ejm
     static ArrayList<vehiculo> ListaVehiculos;
     static ArrayList<semaforo> ListaSemaforo;
-    static ArrayList<JLabel> bloqueos;
-    grafo g;
+    static ArrayList<trabajando> bloqueos;
+    static grafo g;
     ZonaVehicular zv;
     Random random = new Random();
     JPanel componentes;
@@ -61,11 +61,13 @@ public class panel extends JPanel {
     JLabel bloqueoVertical;
     int x = 0;
     int y = 100;
-
+    int cantidadTrafico;
+    static int estadoVisibleNodos;
     public panel(JFrame frame) {
         this.frame = frame;
         pane = this;
-
+        cantidadTrafico=15;
+        estadoVisibleNodos=0;
         componentes = new JPanel();
         componentes.setLocale(null);
         componentes.setBounds(1000, 0, 400, 750);
@@ -138,7 +140,7 @@ public class panel extends JPanel {
             ListaSemaforo.get(i).paint(g);
         }
         for (int i = 0; i < bloqueos.size(); i++) {
-            bloqueos.get(i).repaint();
+            bloqueos.get(i).paint(g);
         }
         this.repaint();
     }
@@ -148,13 +150,13 @@ public class panel extends JPanel {
         ArrayList<vertice> relaciones;
         ArrayList<String> nombreCalles;
         for (int i = 0; i < g.tamano(); i++) {
-            graficaEsquina(g.get(i));
+            //graficaEsquina(g.get(i));
             relaciones = g.get(i).Adyacente();
             nombreCalles = g.get(i).getRutas();
             for (int j = 0; j < relaciones.size(); j++) {
-                graficarCalles(g.get(i).getPunto(), relaciones.get(j).getPunto(), nombreCalles.get(j));
+                graficarCalles(g.get(i), relaciones.get(j), nombreCalles.get(j));
             }
-
+            
         }
     }
 
@@ -162,7 +164,7 @@ public class panel extends JPanel {
         listaEsquinas.add(new Esquina(v.getPunto(), v.nombre));
     }
 
-    private void graficarCalles(Point puntoI, Point puntoF, String nombreC) {
+    private void graficarCalles(vertice puntoI, vertice puntoF, String nombreC) {
         ListaCalles.add(new Calle(puntoI, puntoF, nombreC));
     }
 
@@ -233,16 +235,20 @@ public class panel extends JPanel {
         bloquear.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                bloqueoVertical = new JLabel();
                 String VO = selectorVO.getSelectedItem().toString();
                 String NombreCalle = selectorCalle.getSelectedItem().toString();
                 System.out.println(VO + " " + NombreCalle);
                 pane.setCursor(new java.awt.Cursor(java.awt.Cursor.CROSSHAIR_CURSOR));
-                habilitarClick = true;
-                bloqueoVertical = new JLabel();
+                
+                
                 bloqueoVertical.setBounds(x, y, 120, 93);
                 dibujar(bloqueoVertical, "trabajando");
-                bloqueos.add(bloqueoVertical);
+                bloqueos.add(new trabajando(new Point(x, y)));
                 pane.add(bloqueoVertical);
+                bloqueaCamino(VO.toLowerCase(),NombreCalle.toLowerCase());
+                habilitarClick = true;
+                estadoVisibleNodos=0;
             }
         });
         componentes.add(bloquear);
@@ -257,19 +263,37 @@ public class panel extends JPanel {
         selectorVO.setBounds(30, 350, 150, 50);
         selectorVO.setBackground(Color.green);
         selectorVO.setFont(new java.awt.Font("Kristen ITC", 1, 20));
-        selectorVO.setModel(new javax.swing.DefaultComboBoxModel<>(new String[]{"heroinas", "colombia", "ecuador", "Ma batista",
-             "españa", "mexico", "san martin"}));
+        selectorVO.setModel(new javax.swing.DefaultComboBoxModel<>(new String[]{"A","B","C","D","E","F","G","H","I","J","K","L","M","O","P"}));
+        selectorVO.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                estadoVisibleNodos=1;
+            }
+        });
+            
         componentes.add(selectorVO);
 
         selectorCalle = new JComboBox<>();
         selectorCalle.setBounds(181, 350, 150, 50);
         selectorCalle.setBackground(Color.orange);
         selectorCalle.setFont(new Font("Kristen ITC", 1, 20));
-        selectorCalle.setModel(new DefaultComboBoxModel<>(new String[]{"heroinas", "colombia", "ecuador", "Ma batista",
-             "españa", "mexico", "san martin"}));
+        selectorCalle.setModel(new DefaultComboBoxModel<>(new String[]{"A","B","C","D","E","F","G","H","I","J","K","L","M","O","P"}));
+        selectorCalle.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                estadoVisibleNodos=1;
+            }
+        });
         componentes.add(selectorCalle);
     }
-
+    private void bloqueaCamino(String x, String y){
+        g.mostrar();
+        g.quitarRelacion(x, y);
+        g.mostrar();
+    }
+    public static grafo getGrafo(){
+        return g;
+    }
     public class ZonaVehicular extends Thread {
 
         public int FlujoZona = 1500;
@@ -302,7 +326,7 @@ public class panel extends JPanel {
         }
 
         private void agregarVehiculos() {
-            if (ListaVehiculos.size() < 15) {
+            if (ListaVehiculos.size() < cantidadTrafico) {
                 ListaVehiculos.add(getVehiculo());
             }
         }
@@ -415,7 +439,14 @@ public class panel extends JPanel {
             if (segundo <= 9) {
                 s = "0" + segundo;
             }
-
+            //zona horaria para aumentar y decrementar vehiculos
+            if(hora==3){
+                cantidadTrafico=30;
+            }
+            else{
+                cantidadTrafico=15;
+            }
         }
     }
+    
 }

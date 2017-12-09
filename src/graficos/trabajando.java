@@ -22,15 +22,16 @@ public class trabajando {
     public trabajando(Point punto){
         this.punto=punto;
         try{
-         imagen=ImageIO.read(new File("C:\\Users\\ASUS\\Documents\\NetBeansProjects\\Control_semaforos\\src\\graficos\\images\\trabajando.png"));
-    
+         //imagen=ImageIO.read(new File("C:\\Users\\ASUS\\Documents\\NetBeansProjects\\Control_semaforos\\src\\graficos\\images\\trabajando.png"));
+        imagen = ImageIO.read(getClass().getResource("/images/trabajando.png"));
+       
         }
         catch(Exception e){
         }
        }
     public void paint(Graphics g){
         Graphics2D gg=(Graphics2D)g;
-        gg.drawImage(imagen,punto.x,punto.y, null);
+        gg.drawImage(imagen,punto.x-200,punto.y-100, null);
         
     }
 }

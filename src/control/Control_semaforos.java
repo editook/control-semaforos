@@ -11,9 +11,6 @@ import interfaz.jframe;
  */
 public class Control_semaforos {
 
-    /**
-     * @param args the command line arguments
-     */
     public static void main(String[] args) {
         jframe f=new jframe();
     }

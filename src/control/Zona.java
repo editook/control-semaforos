@@ -5,6 +5,7 @@
  */
 package control;
 
+import graficos.panel;
 import java.awt.Point;
 import java.util.HashMap;
 import java.util.Random;
@@ -121,6 +122,7 @@ public class Zona {
     }
 
     public static Point getPuntoDirecciona(Point p, String nombreCalle) {
+        grafo g=panel.getGrafo();
         Point pu = new Point();
         int aux=0;
         //getUno(462, 492)   2  x
@@ -179,7 +181,6 @@ public class Zona {
             }
         }
         }
-        
 
         //getUno(465, 495)  1  y
         //getUno(265, 295)   4  y

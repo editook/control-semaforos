@@ -25,9 +25,6 @@ public class Esquina {
     public void paint(Graphics g){
         Graphics2D gg=(Graphics2D)g;
         gg.setColor(Color.red);
-        gg.drawRect(punto.x+10,punto.y+10,60,60);
-        //gg.setColor(Color.black);
-        //gg.drawString(nombre,punto.x+30,punto.y+30);
-        
+        gg.fillOval(punto.x+10,punto.y+10, 10, 10);
     }
 }

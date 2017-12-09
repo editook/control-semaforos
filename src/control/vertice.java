@@ -30,8 +30,13 @@ public class vertice {
         return salida;
     }
     public void relacion(vertice v,String nombreCalle){
-    relacion.add(v);
-    rutas.add(nombreCalle);
+        relacion.add(v);
+        rutas.add(nombreCalle);
+    }
+    public void quitar(int pos){
+        relacion.remove(pos);
+        rutas.remove(pos);
+        System.err.println("se quito correctemente");
     }
     public ArrayList<String> getRutas(){
     return rutas;

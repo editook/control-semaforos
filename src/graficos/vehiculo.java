@@ -35,12 +35,11 @@ public class vehiculo extends Thread {
     Color rojo = new Color(255, 32, 32);
     Color amarillo = new Color(255, 255, 0);
     grafo g;
-    public Rectangle objeto1,objeto2;
+    boolean estadooBolitas;
     public vehiculo(Point puntoMov, Point p, int velocity) {
         this.puntoMov = puntoMov;
         ubicacion = p;
-        objeto1=new Rectangle();
-        objeto2=new Rectangle();
+        estadooBolitas=false;
         color = new Color(r.nextInt(255), r.nextInt(255), r.nextInt(255));
         switch (velocity) {
             case 1:
@@ -67,10 +66,11 @@ public class vehiculo extends Thread {
             }
 
         }
-        g = Zona.getMapa();
         this.start();
     }
-
+    public void setGrafo(grafo gr){
+        this.g=gr;
+    }
     @Override
     public void run() {
         while (Limite()) {
@@ -151,25 +151,25 @@ public class vehiculo extends Thread {
         switch (c.direccion) {
             case 1:
                 if (colisiono(ubicacion.x + 46,c.ubicacion.x,c.ubicacion.y ,ubicacion.y)) {
-                    //ubicacion.x + 44 == c.ubicacion.x && ubicacion.y == c.ubicacion.y
+                    
                     res = true;
                 }
                 break;
             case 2:
                 if (colisiono(ubicacion.y+46,c.ubicacion.y,c.ubicacion.x,ubicacion.x)) {
-                    //ubicacion.y + 44 == c.ubicacion.y && ubicacion.x == c.ubicacion.x
+                    
                     res = true;
                 }
                 break;
             case 3:
                 if (colisiono(ubicacion.x, c.ubicacion.x+46,c.ubicacion.y,ubicacion.y)) {
-                    //ubicacion.x == c.ubicacion.x + 44 && ubicacion.y == c.ubicacion.y
+                   
                     res = true;
                 }
                 break;
             case 4:
                 if (colisiono(ubicacion.y,c.ubicacion.y+46,ubicacion.x,c.ubicacion.x)) {
-                    //ubicacion.y == c.ubicacion.y + 44 && ubicacion.x == c.ubicacion.x
+                  
                     res = true;
                 }
                 break;
@@ -183,11 +183,6 @@ public class vehiculo extends Thread {
             res=true;
             
         }}
-        /* if((a>=a2-2 && a<=a2+2 ) ||(a2>=a-2 && a2<=a+2 )){
-        if((b>=b2-2 && b<=b2-2)|| (b2>=b-2 && b<=b2+2)){
-        res=true;
-        }
-        }*/
         return res;
     }
     private boolean Limite() {
@@ -255,6 +250,7 @@ public class vehiculo extends Thread {
 
     private void cambiarDireccion() {
         vertice ve;
+        g=panel.getGrafo();
         for (int i = 0; i < g.size(); i++) {
             ve = g.getAdyacente(i);//quitar a los demas de las esquinas 
             if (esquina(ve)) {
@@ -296,7 +292,8 @@ public class vehiculo extends Thread {
     }
 
     private void cambiarDireccionAutomatico(vertice v) {
-        ArrayList<vertice> relacion = v.Adyacente();
+        g=panel.getGrafo();
+        ArrayList<vertice> relacion = g.getRelaciones(v);
         int randon = r.nextInt(relacion.size());
         Point puntoDireccion = relacion.get(randon).getPunto();
         String calle =v.getRutas().get(randon);
@@ -314,8 +311,6 @@ public class vehiculo extends Thread {
              direccion=4;
             puntoMov.x=0;
             puntoMov.y=-1;
-            }else{
-                
             }
         }
         if(ubicacion.y==puntoDireccion.y+20 && (ubicacion.x<puntoDireccion.x)){
